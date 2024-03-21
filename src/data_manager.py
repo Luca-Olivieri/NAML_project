@@ -43,23 +43,24 @@ def load_images_with_masks(image_directory, mask_directory):
                 print(f"Error loading image {image_filename} or mask: {e}")
     return np.array(images), np.array(labels)
 
-def extract_subimages(images, labels, subimage_size=64, step_size=8):
+def extract_subimages(images, labels, removeIndex, subimage_size=64, step_size=8):
     subimages = []
     sublabels = []
     for i in range(len(images)):
-        image = images[i]
-        label = labels[i]
-        height, width = image.shape[:2]
-        for y in range(0, height - subimage_size + 1, step_size):
-            for x in range(0, width - subimage_size + 1, step_size):
-                subimage = image[y:y+subimage_size, x:x+subimage_size]
-                sublabel = label[y:y+subimage_size, x:x+subimage_size]
-                if np.all(sublabel == 0) or np.all(sublabel == 255):
-                    subimages.append(subimage)
-                    sublabels.append(sublabel[0][0])  # Assuming all values are the same in the sublabel
+        if i != removeIndex: #skip the image used for testing
+            image = images[i]
+            label = labels[i]
+            height, width = image.shape[:2]
+            for y in range(0, height - subimage_size + 1, step_size):
+                for x in range(0, width - subimage_size + 1, step_size):
+                    subimage = image[y:y+subimage_size, x:x+subimage_size]
+                    sublabel = label[y:y+subimage_size, x:x+subimage_size]
+                    if np.all(sublabel == 0) or np.all(sublabel == 255):
+                        subimages.append(subimage)
+                        sublabels.append(sublabel[0][0])  # Assuming all values are the same in the sublabel
     return np.array(subimages), np.array(sublabels)
             
-def create_dataloader(dataset_path, batch_size=100):
+def create_dataloader(dataset_path, batch_size=100, removeIndex=29):
 
    # Replace 'image_directory' and 'mask_directory' with the paths to your image and mask directories
    # image_directory = 'neuroendocrine_/images'
@@ -69,23 +70,16 @@ def create_dataloader(dataset_path, batch_size=100):
    mask_directory = "neuroendocrine_/masks"
 
    images, labels = load_images_with_masks(image_directory, mask_directory)
-   train_images, train_labels = extract_subimages(images[:-1], labels)
-   val_images, val_labels = extract_subimages(images[-1:], labels)
+   train_images, train_labels = extract_subimages(images, labels, removeIndex)
 
    print("Shape of the train_images array:", train_images.shape)
    print("Shape of the train_labels array:", train_labels.shape)
-   print("Shape of the val_images array:", val_images.shape)
-   print("Shape of the val_labels array:", val_labels.shape)
 
    # labels should be 0 or 1
    train_labels[train_labels == 255] = 1
-   val_labels[val_labels == 255] = 1
 
    del images
    del labels
-
-   del val_images
-   del val_labels
 
    # Assuming train_images and train_labels are your training data
    # Calculate the indices of each class

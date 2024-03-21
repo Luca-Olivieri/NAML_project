@@ -35,7 +35,15 @@ def setup_model(model, device):
 
    if isinstance(model, models.inception.Inception3):
       # Modify the last layer to fit your number of classes
-      model.fc = nn.Linear(model.fc.in_features, num_classes)
+      model.fc = nn.Sequential(
+            nn.Linear(model.fc.in_features, 512),
+            nn.ReLU(),
+            nn.Linear(512, 128),
+            nn.ReLU(),
+            nn.Linear(128, 32),
+            nn.ReLU(),
+            nn.Linear(32, num_classes)
+        )
 
    elif isinstance(model, models.AlexNet):
       # Modify the last layer to fit your number of classes
