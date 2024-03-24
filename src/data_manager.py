@@ -60,7 +60,7 @@ def extract_subimages(images, labels, removeIndex, subimage_size=64, step_size=8
                         sublabels.append(sublabel[0][0])  # Assuming all values are the same in the sublabel
     return np.array(subimages), np.array(sublabels)
             
-def create_dataloader(dataset_path, batch_size=100, removeIndex=29):
+def create_dataloader(batch_size=100, n=60000, p=0.66):
 
    # Replace 'image_directory' and 'mask_directory' with the paths to your image and mask directories
    # image_directory = 'neuroendocrine_/images'
@@ -70,14 +70,14 @@ def create_dataloader(dataset_path, batch_size=100, removeIndex=29):
    mask_directory = "neuroendocrine_/masks"
 
    images, labels = load_images_with_masks(image_directory, mask_directory)
-   train_images, train_labels = extract_subimages(images, labels, removeIndex)
+   train_images, train_labels = extract_subimages(images[:-1], labels, 29)
 
    print("Shape of the train_images array:", train_images.shape)
    print("Shape of the train_labels array:", train_labels.shape)
 
    # labels should be 0 or 1
    train_labels[train_labels == 255] = 1
-
+   
    del images
    del labels
 
@@ -90,7 +90,22 @@ def create_dataloader(dataset_path, batch_size=100, removeIndex=29):
    minority_class_size = len(class_0_indices)
 
    # Randomly sample the same number of samples from the majority class
-   undersampled_class_1_indices = np.random.choice(class_1_indices, minority_class_size, replace=False)
+   # undersampled_class_1_indices = np.random.choice(class_1_indices, minority_class_size, replace=False)
+
+   import random
+
+   def pick_items_with_probability(list1, list2, n, p):
+      # Calculate the number of items to pick from each list based on probability p
+      num_items_list1 = int(n * p)
+      num_items_list2 = n - num_items_list1
+
+      # Select items from each list based on probability
+      selected_items_list1 = random.choices(list1, k=num_items_list1)
+      selected_items_list2 = random.choices(list2, k=num_items_list2)
+
+      return selected_items_list1, selected_items_list2
+   
+   class_0_indices, undersampled_class_1_indices = pick_items_with_probability(class_0_indices, class_1_indices, n, p)
 
    del class_1_indices
    del minority_class_size
@@ -107,6 +122,9 @@ def create_dataloader(dataset_path, batch_size=100, removeIndex=29):
    # Use the undersampled indices to create a new balanced dataset
    undersampled_images = train_images[undersampled_indices]
    undersampled_labels = train_labels[undersampled_indices]
+
+   print("Shape of the train_images array:", undersampled_images.shape)
+   print("Shape of the train_labels array:", undersampled_labels.shape)
 
    del train_images
    del train_labels
