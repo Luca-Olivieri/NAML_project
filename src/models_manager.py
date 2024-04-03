@@ -56,7 +56,7 @@ def setup_model(model, device):
    # Move the model to the GPU
    model = model.to(device)
 
-def train(model, optimizer, dataloader, device, num_epochs=1, max_train=200, print_every=10):
+def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max_train=200, print_every=10):
 
    def setup_training(model):
 
@@ -67,7 +67,7 @@ def train(model, optimizer, dataloader, device, num_epochs=1, max_train=200, pri
          model.train()
 
    # Training loop
-   def training_loop(model, optimizer, criterion, dataloader, device, num_epochs=1, max_train=200, print_every=10):
+   def training_loop(model, optimizer, criterion, dataloader, class_weights, device, num_epochs=1, max_train=200, print_every=10):
 
       for epoch in range(num_epochs):
          
@@ -107,9 +107,14 @@ def train(model, optimizer, dataloader, device, num_epochs=1, max_train=200, pri
 
    setup_training(model)
    
-   criterion = nn.CrossEntropyLoss()
+   # criterion = nn.CrossEntropyLoss()
 
-   training_loop(model, optimizer, criterion, dataloader, device, num_epochs, max_train, print_every)
+   class_weights = torch.tensor(class_weights, dtype=torch.float).to(device)
+
+   # Define your loss function with custom class weights
+   criterion = nn.CrossEntropyLoss(weight=class_weights)
+
+   training_loop(model, optimizer, criterion, dataloader, class_weights, device, num_epochs, max_train, print_every)
 
 def load_params(model, local_path, project_path, version, device):
    
