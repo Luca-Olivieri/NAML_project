@@ -23,17 +23,16 @@ def import_model(model_name):
    return model
 
 def setup_model(model, device):
-
    # Set the model to evaluation mode
    model.eval()
-
-      # Freeze all the parameters except the last fully connected layer
-   for param in model.parameters():
-      param.requires_grad = False
 
    num_classes = 2  # Assuming CustomDataset has a 'classes' attribute
 
    if isinstance(model, models.inception.Inception3):
+      # Freeze all the parameters   
+      for param in model.parameters():
+         param.requires_grad = False
+
       # Modify the last layer to fit your number of classes
       model.fc = nn.Sequential(
             nn.Linear(model.fc.in_features, 512),
@@ -46,8 +45,14 @@ def setup_model(model, device):
         )
 
    elif isinstance(model, models.AlexNet):
-      # Modify the last layer to fit your number of classes
-      model.classifier[6] = nn.Linear(model.classifier[6].in_features, num_classes)
+      model.classifier.add_module('7', nn.ReLU())
+      model.classifier.add_module('8', nn.Linear(1000, 512))
+      model.classifier.add_module('9', nn.ReLU())
+      model.classifier.add_module('10', nn.Linear(512, 128))
+      model.classifier.add_module('11', nn.ReLU())
+      model.classifier.add_module('12', nn.Linear(128, 32))
+      model.classifier.add_module('13', nn.ReLU())
+      model.classifier.add_module('14', nn.Linear(32, 2))
    # Move the model to the GPU
    model = model.to(device)
 
@@ -59,7 +64,7 @@ def train(model, optimizer, dataloader, device, num_epochs=1, max_train=200, pri
          model.fc.train()
 
       elif isinstance(model, models.AlexNet):
-         model.classifier[6].train()
+         model.train()
 
    # Training loop
    def training_loop(model, optimizer, criterion, dataloader, device, num_epochs=1, max_train=200, print_every=10):
