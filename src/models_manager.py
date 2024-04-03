@@ -67,7 +67,7 @@ def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max
          model.train()
 
    # Training loop
-   def training_loop(model, optimizer, criterion, dataloader, class_weights, device, num_epochs=1, max_train=200, print_every=10):
+   def training_loop(model, optimizer, criterion, dataloader, device, num_epochs=1, max_train=200, print_every=10):
 
       for epoch in range(num_epochs):
          
@@ -114,7 +114,7 @@ def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max
    # Define your loss function with custom class weights
    criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-   training_loop(model, optimizer, criterion, dataloader, class_weights, device, num_epochs, max_train, print_every)
+   training_loop(model, optimizer, criterion, dataloader, device, num_epochs, max_train, print_every)
 
 def load_params(model, local_path, project_path, version, device):
    
