@@ -56,7 +56,30 @@ def setup_model(model, device):
    # Move the model to the GPU
    model = model.to(device)
 
-def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max_train=200, print_every=10):
+def validate(model, criterion, dataloader, device):
+   # model.eval()
+   val_loss = 0.0
+   correct_predictions = 0
+   total_samples = 0
+    
+   for inputs, labels in dataloader:
+      inputs, labels = inputs.to(device), labels.to(device)
+      outputs = model(inputs)
+      loss = criterion(outputs, labels)
+      val_loss += loss.item() * inputs.size(0)
+      _, predicted = torch.max(outputs, 1)
+      correct_predictions += (predicted == labels).sum().item()
+      total_samples += labels.size(0)
+    
+   val_loss /= total_samples
+   accuracy = correct_predictions / total_samples
+    
+   print(f'Validation Loss: {val_loss:.4f}, Accuracy: {accuracy:.4f}')
+    
+   # model.train()
+
+def train(model, optimizer, dataloader, val_dataloader, class_weights, device, 
+          num_epochs=1, max_train=200, print_every=10):
 
    def setup_training(model):
 
@@ -67,13 +90,14 @@ def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max
          model.train()
 
    # Training loop
-   def training_loop(model, optimizer, criterion, dataloader, device, num_epochs=1, max_train=200, print_every=10):
-
+   def training_loop(model, optimizer, criterion, train_dataloader, val_dataloader, device, 
+                  num_epochs=num_epochs, max_train=max_train, print_every=print_every):
+       
       for epoch in range(num_epochs):
-         
+        
          running_loss = 0.0
-         
-         for i, (inputs, labels) in enumerate(dataloader, 1):
+        
+         for i, (inputs, labels) in enumerate(train_dataloader, 1):
 
             # Fetch inputs and labels
             inputs, labels = inputs.to(device), labels.to(device)
@@ -96,14 +120,17 @@ def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max
 
             # Print average loss every print_every iterations
             if i % print_every == 0:
-
-               epoch_loss = running_loss / (print_every * len(inputs))
-               print(f"Iteration [{i}/{len(dataloader)}], Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}")
-               running_loss = 0.0
-
+                epoch_loss = running_loss / (print_every * len(inputs))
+                print(f"Iteration [{i}/{len(train_dataloader)}], Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}")
+                running_loss = 0.0
+                validate(model, criterion, val_dataloader, device)
+                print("------------------")
+      
             # Iteration limit
             if i >= max_train:
-               break
+                break
+         
+         print("==========================")
 
    setup_training(model)
    
@@ -114,7 +141,7 @@ def train(model, optimizer, dataloader, class_weights, device, num_epochs=1, max
    # Define your loss function with custom class weights
    criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-   training_loop(model, optimizer, criterion, dataloader, device, num_epochs, max_train, print_every)
+   training_loop(model, optimizer, criterion, dataloader, val_dataloader, device, num_epochs, max_train, print_every)
 
 def load_params(model, local_path, project_path, version, device):
    

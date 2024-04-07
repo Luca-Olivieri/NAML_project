@@ -71,12 +71,19 @@ def create_dataloader(batch_size=100, n=60000, p=0.66):
 
    images, labels = load_images_with_masks(image_directory, mask_directory)
    train_images, train_labels = extract_subimages(images[:-1], labels, 29)
+   val_images, val_labels = extract_subimages(images[-1:], labels, -1)
+   
+   val_images = val_images[:100]
+   val_labels = val_labels[:100]
 
    print("Shape of the train_images array:", train_images.shape)
    print("Shape of the train_labels array:", train_labels.shape)
+   print("Shape of the val_labels array:", val_images.shape)
+   print("Shape of the val_labels array:", val_labels.shape)
 
    # labels should be 0 or 1
    train_labels[train_labels == 255] = 1
+   val_labels[val_labels == 255] = 1
    
    del images
    del labels
@@ -139,16 +146,18 @@ def create_dataloader(batch_size=100, n=60000, p=0.66):
 
    # Create the undersampled dataset
    undersampled_dataset = CustomDataset(undersampled_images, undersampled_labels, transform=transform)
+   val_dataset = CustomDataset(val_images, val_labels, transform=transform)
 
    del undersampled_images
    del undersampled_labels
 
    # Create the data loader for the undersampled dataset
    undersampled_loader = DataLoader(undersampled_dataset, batch_size=batch_size, shuffle=True)
+   val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
    del undersampled_dataset
 
-   return undersampled_loader
+   return undersampled_loader, val_loader
 
 def get_images(dataset_path, test=False):
 
