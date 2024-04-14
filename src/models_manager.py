@@ -9,8 +9,40 @@ from torchvision import transforms
 import torch.nn as nn
 from torchvision.transforms import transforms
 from torchvision import transforms, models
+import torch.nn.functional as F
 
 import matplotlib.pyplot as plt
+
+seed_value = 42
+
+np.random.seed(seed_value)  # NumPy
+torch.manual_seed(seed_value)  # PyTorch CPU
+torch.cuda.manual_seed_all(seed_value)  # PyTorch GPU
+
+def focal_loss(outputs, labels):
+    
+   alpha = 1
+   gamma = 2
+   # Convert labels to int64 type
+   labels = labels.long()
+
+   # Compute class weights based on the frequency of each class in the labels
+   class_counts = torch.bincount(labels)
+
+   class_weights = (1 / class_counts.float()).clone().detach()
+   
+   # Normalize the class weights
+   class_weights /= class_weights.sum()
+
+   # Compute softmax along the class dimension
+   input_softmax = F.softmax(outputs, dim=1)
+   # Gather the probabilities of the true class
+   p_t = torch.gather(input_softmax, 1, labels.view(-1, 1))
+   # Compute binary cross entropy loss
+   bce_loss = F.cross_entropy(outputs, labels, reduction='none')
+   # Compute focal loss
+   focal_loss = alpha * (1 - p_t) ** gamma * bce_loss
+   return torch.mean(focal_loss)
 
 def import_model(model_name):
    if model_name == "inceptionv3":
@@ -139,7 +171,8 @@ def train(model, optimizer, dataloader, val_dataloader, class_weights, device,
    class_weights = torch.tensor(class_weights, dtype=torch.float).to(device)
 
    # Define your loss function with custom class weights
-   criterion = nn.CrossEntropyLoss(weight=class_weights)
+   # criterion = nn.CrossEntropyLoss(weight=class_weights)
+   criterion = focal_loss
 
    training_loop(model, optimizer, criterion, dataloader, val_dataloader, device, num_epochs, max_train, print_every)
 
