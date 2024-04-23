@@ -1,0 +1,194 @@
+% Define blue color typical of polimi
+\definecolor{bluepoli}{cmyk}{0.4,0.1,0,0.4}
+
+% Define custom math operators
+
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+
+\newcommand{\subtitle}[1]{\par\vspace{0.5\baselineskip}\noindent\textcolor{bluepoli}{\textbf{#1}}\par}
+\newcommand{\nb}{\textbf{N.B.}\\}
+
+\newcommand{\colspace}[1]{\text{Col}\paren{#1}}
+\newcommand{\rowspace}[1]{\text{Row}\paren{#1}}
+\newcommand{\nullspace}[1]{\text{Null}\paren{#1}}
+
+\renewcommand{\dim}[1]{\text{dim}\paren{#1}}
+\renewcommand{\rank}[1]{\text{Rank}\paren{#1}}
+
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\matr}[1]{\mathbf{#1}}
+\newcommand{\estim}[1]{\hat{#1}}
+
+\newcommand{\realset}{\mathbb{R}}
+\newcommand{\complexset}{\mathbb{C}}
+\newcommand{\smoothset}{\mathcal{C}}
+\newcommand{\loss}{\mathcal{L}}
+\newcommand{\normal}[1]{\mathcal{N}\paren{#1}}
+
+% Commands for time-series
+
+\newcommand{\autocov}[2]{\gamma_{#1}\paren{#2}}
+\newcommand{\autocorr}[2]{\widetilde{\gamma}_{#1}\paren{#2}}
+\newcommand{\spectrum}[2]{\Gamma_{#1}\paren{#2}}
+\newcommand{\complspec}[2]{\Phi_{#1}\paren{#2}}
+\newcommand{\fourier}[1]{\mathcal{F}\bracket{#1}}
+\newcommand{\dirac}[1]{\delta\paren{#1}}
+\newcommand{\res}[1]{\varepsilon\paren{#1}}
+\newcommand{\wn}[1]{\mathcal{WN}\paren{#1}}
+\newcommand{\AR}{\text{AR}}
+\newcommand{\MA}{\text{MA}}
+\newcommand{\ARMA}{\text{ARMA}}
+\newcommand{\ARMAX}{\text{ARMAX}}
+
+\newcommand{\neper}{\mathit{e}}
+\newcommand{\eps}{\varepsilon}
+
+\newcommand{\expect}[1]{\mathbb{E}\bracket{#1}}
+\renewcommand{\var}{\variance}
+\newcommand{\variance}[1]{\textrm{Var}\paren{#1}}
+\newcommand{\covar}[1]{\textrm{Cov}\paren{#1}}
+
+% Responsive Parenthesis
+% \usepackage{mleftright}
+
+\newcommand{\paren}[1]{\!\left(#1\right)}
+\newcommand{\bracket}[1]{\!\left[#1\right]}
+
+\let\oldforall\forall
+\let\olexists\exists
+
+% TODO var[] or var()
+
+\renewcommand{\forall}{\oldforall\ }
+\renewcommand{\exists}{\olexists\ }
+
+% Custom theorem environments
+\declaretheoremstyle[
+  headfont=\color{bluepoli}\normalfont\bfseries,
+  bodyfont=\color{black}\normalfont,
+  postheadspace=\newline,
+]{colored}
+
+\declaretheoremstyle[
+  headfont=\color{bluepoli}\normalfont\bfseries,
+  bodyfont=\color{black}\normalfont,
+  postheadspace=\newline,
+]{statement}
+
+% \setcounter{secnumdepth}{3} % % Set the depth of the section numbering
+\setcounter{secnumdepth}{2} % Number up to subsections
+\setcounter{tocdepth}{1} % Display up to sections in the table of contents
+% \setcounter{tocdepth}{3} % Display up to subsubsections in the table of contents
+
+% Set-up caption colors
+\captionsetup[figure]{labelfont={color=bluepoli}} % Set colour of the captions
+\captionsetup[table]{labelfont={color=bluepoli}} % Set colour of the captions
+% \captionsetup[algorithm]{labelfont={color=bluepoli}} % Set colour of the captions
+
+\theoremstyle{colored}
+\newtheorem{theorem}{Theorem}[chapter]
+\surroundwithmdframed[
+  linewidth=1.5pt,
+  linecolor=bluepoli,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  innerrightmargin=6pt,
+  innerleftmargin=6pt,
+  skipabove=12pt
+]{theorem}
+
+\newtheorem{proposition}{Proposition}[chapter]
+% Define a new theorem environment with a square box
+\surroundwithmdframed[
+  linewidth=1.5pt,
+  linecolor=bluepoli,
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  innerrightmargin=6pt,
+  innerleftmargin=6pt,
+  skipabove=12pt
+]{proposition}
+
+\theoremstyle{statement}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{remark}{Remark}
+\newtheorem*{remarks}{Remarks}
+\newtheorem*{examples}{Examples}
+\newtheorem*{example}{Example}
+
+% Custom proof environment
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep
+        \color{bluepoli}\itshape
+    #1\@addpunct{:}]\hskip0pt\newline\vspace{6pt}\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+
+% Enhances the features of the standard "table" and "tabular" environments.
+\newcommand\T{\rule{0pt}{2.6ex}}
+\newcommand\B{\rule[-1.2ex]{0pt}{0pt}}
+
+% Pseudo-code algorithm descriptions.
+\newcounter{algsubstate}
+\renewcommand{\thealgsubstate}{\alph{algsubstate}}
+\newenvironment{algsubstates}
+  {\setcounter{algsubstate}{0}%
+   \renewcommand{\STATE}{%
+     \stepcounter{algsubstate}%
+     \Statex {\small\thealgsubstate:}\space}}
+  {}
+
+% New font size
+\newcommand\numfontsize{\@setfontsize\Huge{200}{60}}
+
+% Title format: chapter
+\titleformat{\chapter}[hang]{
+\fontsize{50}{20}\selectfont\bfseries\filright}{\textcolor{bluepoli} \thechapter\hsp\hspace{2mm}\textcolor{bluepoli}{|   }\hsp}{0pt}{\huge\bfseries \textcolor{bluepoli}
+}
+
+% Title format: section
+\titleformat{\section}
+{\color{bluepoli}\normalfont\Large\bfseries}
+{\color{bluepoli}\thesection.}{1em}{}
+
+% Title format: subsection
+\titleformat{\subsection}
+{\color{bluepoli}\normalfont\large\bfseries}
+{\color{bluepoli}\thesubsection.}{1em}{}
+
+% Title format: subsubsection
+\titleformat{\subsubsection}
+{\color{bluepoli}\normalfont\large\bfseries}
+{\color{bluepoli}\thesubsubsection.}{1em}{}
+
+% Shortening for setting no horizontal-spacing
+\newcommand{\hsp}{\hspace{0pt}}
+
+\makeatletter
+% Renewcommand: cleardoublepage including the background pic
+\renewcommand*\cleardoublepage{%
+  \clearpage\if@twoside\ifodd\c@page\else
+  \null
+  \AddToShipoutPicture*{\BackgroundPic}
+  \thispagestyle{empty}%
+  \newpage
+  \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+%For correctly numbering algorithms
+\numberwithin{algorithm}{chapter}
