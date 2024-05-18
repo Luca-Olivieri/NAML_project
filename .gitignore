@@ -3,3 +3,4 @@
 images/
 masks/
 neuroendocrine_
+*.pth
