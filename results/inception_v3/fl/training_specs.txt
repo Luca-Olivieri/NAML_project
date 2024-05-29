@@ -1,0 +1,6 @@
+Inception v3 trained with:
+- Balanced, non-augmented, dataset;
+- Batch size 100;
+- Loss function: focal_loss(alpha=1, gamma=2);
+- Optimiser: Adam(lr=0.0005);
+- # Epochs: 5.

@@ -1,2 +1,0 @@
-accuracy         ,precision        ,specificity      ,sensibility      ,IoU              ,dice_coeff       ,f1_score
-0.8749 +- 0.0116 ,0.9400 +- 0.0029 ,0.6122 +- 0.0212 ,0.9013 +- 0.0153 ,0.8499 +- 0.0144 ,0.9102 +- 0.0105 ,0.6923 +- 0.0212

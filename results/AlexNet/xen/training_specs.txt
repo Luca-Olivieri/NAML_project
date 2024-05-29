@@ -1,0 +1,6 @@
+AlexNet trained with:
+- Balanced, non-augmented, dataset;
+- Batch size 100;
+- Loss function: CrossEntropyLoss();
+- Optimiser: AdamW(lr=0.0001, weight_decay=0.1);
+- # Epochs: 5.
