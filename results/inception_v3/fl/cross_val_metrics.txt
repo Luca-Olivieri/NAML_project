@@ -1,9 +1,9 @@
-INCEPTION V3
+INCEPTION V3 - FL
 -------------------------------
-accuracy       0.8749 +- 0.0116
-precision      0.9400 +- 0.0029
-specificity    0.6122 +- 0.0212
-sensibility    0.9013 +- 0.0153
-IoU            0.8499 +- 0.0144
-dice_coeff     0.9102 +- 0.0105
-f1_score       0.6923 +- 0.0212
+accuracy       0.8966 +- 0.0058
+precision      0.9138 +- 0.0066
+specificity    0.6549 +- 0.0156
+sensibility    0.9338 +- 0.0068
+IoU            0.8762 +- 0.0075
+dice_coeff     0.9320 +- 0.0044
+f1_score       0.7474 +- 0.0128

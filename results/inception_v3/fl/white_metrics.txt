@@ -1,0 +1,7 @@
+Accuracy       0.797532
+Precision           NaN
+Specificity         NaN
+Sensibility    0.797532
+IoU            0.797532
+Dice coeff.    0.886425
+F1 score            NaN

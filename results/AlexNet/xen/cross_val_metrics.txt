@@ -1,9 +1,9 @@
-ALEXNET
+ALEXNET - XEN
 -------------------------------
-accuracy       0.9184 +- 0.0029
-precision      0.9174 +- 0.0032
-specificity    0.4970 +- 0.0164
-sensibility    0.9815 +- 0.0018
-IoU            0.9030 +- 0.0041
-dice_coeff     0.9477 +- 0.0024
-f1_score       0.6013 +- 0.0182
+accuracy       0.9125 +- 0.0044
+precision      0.9100 +- 0.0071
+specificity    0.6084 +- 0.0163
+sensibility    0.9552 +- 0.0069
+IoU            0.8929 +- 0.0063
+dice_coeff     0.9414 +- 0.0037
+f1_score       0.7103 +- 0.0130
