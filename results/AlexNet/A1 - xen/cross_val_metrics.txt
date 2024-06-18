@@ -1,4 +1,4 @@
-ALEXNET - XEN
+A1 - ALEXNET (XEN)
 -------------------------------
 accuracy       0.9125 +- 0.0044
 precision      0.9100 +- 0.0071

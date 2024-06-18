@@ -1,4 +1,4 @@
-INCEPTION V3 - XEN
+I2 - INCEPTION V3 (XEN)
 -------------------------------
 accuracy       0.9041 +- 0.0048
 precision      0.9122 +- 0.0069

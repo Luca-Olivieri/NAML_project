@@ -1,4 +1,4 @@
-INCEPTION V3 - FL
+I1 - INCEPTION V3 (FL)
 -------------------------------
 accuracy       0.8966 +- 0.0058
 precision      0.9138 +- 0.0066

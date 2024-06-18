@@ -1,0 +1,9 @@
+A1 - ALEXNET (XEN)
+-------------------------------
+Accuracy       0.925435
+Precision      0.921484
+Specificity    0.592651
+Sensibility    0.994673
+IoU            0.916959
+Dice coeff.    0.956681
+F1 score       0.721361

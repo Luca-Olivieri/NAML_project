@@ -1,4 +1,4 @@
-ALEXNET - XEN REG
+A2 - ALEXNET (XEN REG)
 -------------------------------
 accuracy       0.9172 +- 0.0031
 precision      0.8948 +- 0.0064
