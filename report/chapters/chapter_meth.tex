@@ -1,0 +1,184 @@
+\par
+While we tried to adhere as closely as possible to the methodologies described by the paper, we encountered instances where deviations were necessary either because of the \textbf{lack of specific details} in the original paper, \textbf{unavailability of all the necessary} data, or of \textbf{access to expert pathologists}. In this section we are going to focus on the differences between our approach and the one proposed on the paper and outline how this affects the results.
+\section{Dataset}
+\par
+The dataset published by the authors consists of 30 images with a resolution of $2100\times1300$ px. 
+\par
+However, this dataset represents only \textbf{a portion of the complete dataset} used in the original paper and, in particular, we have reasons to believe that it consists of the data used to perform testing, as its size matches the original testing one. In our replication effort, due to the unavailability of the entire dataset, we were constrained to utilize this subset for training, validation, and testing purposes.
+\par
+This dataset is \textbf{highly unbalanced} between tumor and non-tumor cells. \uline{Tumor cells are about 10 times more present than non-tumor ones}. For this reason we opted to train our models using a \textbf{balanced} and \textbf{non-augmented version} of this dataset, obtained by \textbf{clipping} the considered amount of images to the size of the minority class (in our case, the non-tumor class), in order to achieve a $50/50$ dataset.
+Furthermore, \textbf{training images have been normalised} (each channel has been transformed separately).
+We also tried, in some training scenarios, to employ simple data processing techniques, as an attempt to address unbalances while minimising the amount of discarded majority images.
+
+\par
+\textbf{The ground truth data shared by the authors is also different from the one used in the paper}. While the authors utilized input from two different pathologists and merged them with two different consensus criteria, we only had access to a single ground truth mask of unspecified origin and consensus criterion.
+
+\section{Models}
+
+\par
+We used \textbf{default pre-trained models} for both AlexNet and Inception-V3, described in section \ref{sec:models}, previously trained on ImageNet dataset and found to be successful in the image classification and segmentation task. We changed the classifier of both networks to adapt them to a binary classification problem: \textbf{both classification layers were augmented} with additional progressively shrinking layers in order to ease the features abstraction and classification process as a whole.
+
+\par
+The following is the classifier that we used for AlexNet:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Layer Type} & \textbf{Input Dimension} & \textbf{Output Dimension} \\
+\hline
+Linear & 4096 & 1000 \\
+Linear & 1000 & 512 \\
+Linear & 512 & 128 \\
+Linear & 128 & 32 \\
+Linear & 32 & 2 \\
+\hline
+\end{tabular}
+\caption{AlexNet classifier architecture}
+\label{tab:layer-dimensions}
+\end{table}
+
+And the next one is the classifier that we used for Inception-V3:
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Layer Type} & \textbf{Input Dimension} & \textbf{Output Dimension} \\
+\hline
+Linear & 2048 & 512 \\
+Linear & 512 & 128 \\
+Linear & 128 & 32 \\
+Linear & 32 & 2 \\
+\hline
+\end{tabular}
+\caption{Inception-V3 classifier architecture}
+\label{tab:layer-dimensions}
+\end{table}
+
+We used ReLu activation functions for both classifiers.
+
+\section{Training}
+
+The training has been performed, as in the original paper, leveraging \textbf{fine-tuning} with AlexNet, and \textbf{transfer learning} with Inception-V3.
+
+Given the size and unbalance issues that undermined the usability of the dataset, many optimisers, loss functions, training parameters, data collection and processing techniques have been employed to achieve optimal training results.
+
+However, many of these approaches found to be ineffective and thus discarded early on. In total, \uline{4 version of models have been cross-validated}: their training settings are illustrated in the following table.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|c|c|}
+\hline
+ID & \textbf{Model} & \textbf{Optimiser} & \textbf{Loss function}  & \textbf{Batch size} & \textbf{Epochs} 
+\\ \hline \hline
+A1 & AlexNet & Adam(lr $= 10^{-4}$) & XEn & 100 & 5
+\\ \hline
+A2 & AlexNet & AdamW(lr $= 10^{-4}$, $\lambda = 0.1$) & XEn & 100 & 5
+\\\hline 
+I1 & Inc.-V3 & Adam(lr $ = 5\cdot10^{-4}$) & FL($\alpha=1, \gamma=2$) & 100 
+& 5 
+\\ \hline 
+I2 & Inc.-V3 & AdamW(lr $ = 5\cdot10^{-4}$) & XEn & 100 & 5
+\\ \hline
+\end{tabular}
+\caption{Training parameters}
+\label{tab:training-parameters}
+\end{table}
+
+Here is a list of methods that were employed during some of the training attempts but then disregarded for their ineffectiveness:
+
+\begin{enumerate}
+    \item \textbf{Dataset generation}
+    \begin{enumerate}
+        \item \textbf{Full dataset}: leveraging the full dataset for the training delivered negative results due to its unbalance. The models trained through this were severely biased towards tumors (as expected due to the greater presence of tumor samples), leading to predictions which presented many more tumor labels than necessary.
+        \item \textbf{Over-sampled dataset}:
+        We over-sampled the minority (non-tumor) class in order to equalise the frequency of image classes taken into account during the training. Reasonably, this helped with the bias but led to significant over-fitting.
+
+    \end{enumerate}
+
+    \item \textbf{Data processing}
+
+    \begin{enumerate}
+        \item \textbf{Data Augmentation}:
+        All images of both classes, with some independent probabilities, have been subject to:
+        \begin{itemize}
+            \item random horizontal flipping,
+            \item random vertical flipping,
+            \item random rotation by 20° degrees.
+        \end{itemize}
+        These transformation have been set in addition to the baseline normalisation. Unfortunately, training evaluation metrics showed no improvement: small transformation probabilities showed no significant results; too high probabilities worsened visibly the training as it was not able to converge to a optimal minimum, without actually scoring a much better unbiasedness.
+
+        \item \textbf{Image Equalisation}:
+        Images have been fed to an \uline{histogram equalisation} filter provided by the library ComputerVision2 (CV2), which automatically enhances the contrast and the details visibility. This approach, with the hope to provide more visual separation from tumor and non-tumor areas, led to no significant results.
+    \end{enumerate}
+
+        
+    \item \textbf{Loss function definition}:
+    \begin{enumerate}
+        \item \textbf{Custom class weighting}:
+        we increased the weight assigned to non-tumor training points so as to incentivise the optimiser to prioritise minority samples.
+        This lead to beneficial results with some predictions and negative results with others. Due to this unrobustness, this approach was discarded.
+    \end{enumerate}
+
+    \item \textbf{Optimiser definition}:
+    \begin{enumerate}
+        \item \textbf{SGD}:
+        We initially leveraged stochastic gradient descent with momentum = 0.9 (as in the original paper) for both models. However, our analysis denoted that Adam was superior to it, as it was able to minimise at a faster rate (especially in the beginning, in the first iterations), and, consequently, to approach better weights in the same number of iterations.
+    \end{enumerate}
+    
+\end{enumerate}
+
+In additions to these approaches, a generic tuning of training parameters were adopted.
+Hyper-parameters such as:
+\begin{itemize}
+    \item batch sizes,
+    \item number of epochs,
+    \item learning rates,
+    \item weights decay terms,
+    \item custom class weights,
+    \item focal loss multipliers,
+\end{itemize}
+
+were tuned by picking the best values resulting from a validation phase.
+
+\section{Validation}
+\label{sec:validation}
+
+\par
+A \textbf{3-fold-cross-validation} was performed in order to validate models that faced different training settings and select the most performing and robust one.
+We wished to employ Leave-One-Out Cross-Validation (LOOCV). However, constrained by computational limitations, we could not rotate all 30 images. Consequently, we opted to rotate through a subset of the images to ensure computational feasibility, \uline{balancing time complexity and true loss estimation quality}.
+
+\par The validation, differently from the original paper, was conducted by computing \textbf{full images predictions} (\uline{through the probability map}), in order to estimate as precisely as possible the actual model's performance.
+
+\par
+The purpose of the validation set was for \textbf{hyper-parameters tuning, adjustments in the model and training methods}, through the evaluation of prediction computed starting from a set of input images separated from training and testing sets, hence \uline{independent} from the model itself (for an accurate and unbiased assessment of the model).
+
+\par
+All cross-validated models went through the \textbf{computation of the metrics} of the 3-fold predictions, which then got averaged by the same subset of images. These 3-averaged metrics were then recorded, averaged all together and finally recorded, along with their standard deviation, for comparison.
+
+The collected metrics are displayed in the following table.
+
+\begin{itemize}
+    \item \textbf{Accuracy}: the amount of correct predictions over all predictions.
+    \item \textbf{Precision}$^*$: the amount of correct positive predictions over all positive predictions.
+    \item \textbf{Specificity}$^*$: the amount of correct negative predictions over all negative true labels.
+    \item \textbf{Sensitivity} (recall): the amount of correct positive predictions over all positive true labels.
+    \item \textbf{Intersection over Union} (IoU): a measure of the overlap between the positive true labels set and the positive prediction set.
+    \item \textbf{Dice coefficient}: a measure of the similarity between the positive true labels set and the positive prediction set.
+    \item \textbf{F1 score}$^*$: harmonic mean between precision and recall.
+\end{itemize}
+
+ These validated metrics, collected for each cross-validated model, have been leveraged for comparison to determine the best models.
+
+ \subtitle{Remarks}
+ \begin{itemize}
+     \item For full-tumor images, the metrics indicated with $^*$ were discarded because either they could not be computed or they were uninformative. The rest of their measures have been collected anyway.
+     \item We notice some differences in performance of the different models in the context of full-tumor image predictions. For this reason, these images have also been subject of a separate evaluation for better assessment of the models.
+ \end{itemize}
+
+\section{Testing}
+
+\par
+We evaluated our models by performing the very procedure described in section \ref{subsec:prediction_procedure} (analogously to the validation phase) on a testing image, separated from validation and training set. However, we could not replicate the same consensus methods used in the original paper because the procedure was quite different: after the neural network inference, two pathologist were tasked to edit the boundaries of the prediction. The authors then used two different consensus methods to compute the final results.
+
+\par
+We didn't have access to professional pathologists and the authors shared only a single mask. We therefore evaluated our model using the mask provided. It's important to recognize that our evaluation methods differed from those outlined in the original paper, precluding direct comparison.

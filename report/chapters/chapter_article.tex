@@ -1,0 +1,103 @@
+We are replicating the article \textit{"Identifying tumor in pancreatic neuroendocrine neoplasms from Ki67 images using transfer learning"}, by 
+Muhammad Khalid Khan Niazil, Thomas Erol Tavolaral, Vidya Arole, Douglas J. Hartman, Liron Pantanowitz, Metin N. Gurcan.
+
+\section{Dataset}
+\label{sec:dataset}
+
+\par
+As written on the original paper, the database consists of 33 whole slide images of Ki67 stained neuroendocrine tumor biopsies acquired from 33 different patients. All slides were anonymized and digitized at 20x magnification using a high-resolution scanner (Aperio ScanScope, Leica Biosystems) at 0.2437 microns per pixel squared. 
+
+\par
+Portions of whole slide images were annotated for tumor positive/negative and non-tumor positive/negative  regions by an expert pathologist A. Each annotation was sampled for 64x64 pixel tiles at 20x magnification.
+
+\par
+In total, this procedure lead to the generation of 138,056 tiles of 64x64 pixels each, divided in 129,024 tumor and 9,024 non-tumor tiles.
+As is it noticeable, the resulting dataset is very unbalanced: for each non-tumor tile, there are approximately 14 tumor tiles.
+
+\section{Models}
+\label{sec:models}
+
+The models leveraged for the problem were two convolutional deep neural networks, both pre-trained on Imagenet dataset and achieved positive results on testing evaluations.
+
+\begin{itemize}
+    \item \textbf{Inception v3}: in the study, it is the main model used for the study, more sophisticated and promising, adopting a transfer learning approach.
+    \item \textbf{AlexNet}: this model is used for a baseline comparison, trained through fine-tuning.
+\end{itemize}
+
+\subsection{AlexNet}
+
+AlexNet is a large, deep convolution neural network trained on the Imagenet large Visual Recognition Challenge dataset from 2012. A standard dataset in computer vision classification tasks, consisting of 1000 classes. It consists of five ReLU convolutional layers followed by three fully-connected layers and a final softmax for classification.
+
+\subsection{Inception v3}
+
+Inception-v3 is a large, deep convolution neural network trained also trained on Imagenet. Inception-v3 is distinguished from conventional CNNs in four respects: 
+\begin{enumerate}
+    \item \textbf{1x1 convolutions}: they reduce computation through dimensionality reduction,
+    \item \textbf{Inception modules}: they allow the network to choose which size convolution at each layer is best by performing smaller, parallel convolutions of different sizes, whose filters are concatenated as a final output. Conventional CNNs are limited by fixed convolution sizes.
+    \item \textbf{Label smoothing}: it is a regularization method that replaces target vector 0s and 1s used for classification of k different classes with $\varepsilon$/k and 1-$\varepsilon$(k-1)/k, respectively, where $\varepsilon$ is the estimated proportion of mislabeled training samples.
+    \item \textbf{Auxiliary classifiers}: Finally, Inception v3 contains two auxiliary softmax classifiers, connected to the outputs of two intermediary Inception modules. In a sense, these allow the network to choose at which Inception module output it classifies, rather than propagating to the end.
+
+\end{enumerate}
+
+\section{Training}
+
+\begin{itemize}
+    \item \textbf{AlexNet} (fine-tuning): 
+        It is trained with stochastic gradient descent with momentum and decay rate of 0.9, a mini-batch size of 100 for 10 epochs, a learning rate of 0.0001 with an exponential decay of 0.9, and employs cross-entropy for loss. The first decay rate reduces the effect of momentum by a factor of 0.9 every epoch, and the second decay rate reduces the learning rate by a factor of 0.9 every epoch. Rather than training solely the final softmax layer, the error is allowed to back-propagate through the entire network, allowing for fine-tuning of each weight.
+    \item \textbf{Inception v3} (transfer learning):
+        Inception v3 is trained with stochastic gradient descent with momentum and decay rate of 0.9, a learning rate of 0.045 with an exponential decay of rate of 0.94, and employs cross- entropy to measure loss. The first decay rate essentially reduces the effect of momentum by a factor of 0.9 every epoch, and the second decay rate reduces the learning rate by a factor of 0.94 every epoch. Inception v3 has learnt succinct features to successfully categorize data into 1000 classes. We use transfer learning to exploit these rich set of features, i.e., we used Inception v3 as a feature extractor and trained solely its softmax classifiers (auxiliary and principal) on our two class (tumor and non-tumor) dataset. The learning rate was set to 0.01, and a mini-batch size of 100 was used over 3000 iterations. 
+\end{itemize}
+
+\section{Validation}
+
+\par
+Validation was performed on a validation set, generated through a training-validation split.
+For both of the models, 10\% of the training data was utilized for validation. 
+
+\section{Testing}
+
+\subsection{Prediction Procedure}
+\label{subsec:prediction_procedure}
+
+\par
+The generation of the image segmentation prediction follows a structured methodology.
+
+\par
+To start with, the testing dataset is created by extracting a set of $2100 \times 1300$ pixels images (referred to as HPF images in the article) from one of whole slide images specifically left out from the training phase of the model. These images are processed in the following way: a $64 \times 64$ pixels sliding window passes over the test input image with a step size of $8$ pixel, producing a set of partially overlapping tiles. 
+
+\par
+As each tiles are fed to the model, a map keeps track of the number of times a certain pixel is passed over, while two other maps are updated with number of times a pixel is classified as non-tumor and tumor. In such a framework, the number of tumor hits maps averaged by the third map results in a \textbf{probability map}, showing, according to the model, how likely a pixel is to be a tumor pixel. E.g., if a certain pixel is hit $7$ times (thus, in $7$ different, but overlapping, tiles), and in $4$ cases this resulted in a tumor classification, then $\frac{4}{7}$ is an estimate of the tumor classification probability.
+
+\par
+Finally, the probability is thresholded with respect to the value $0.5$. That is, the final \textbf{binary mask} counts as tumors the pixel that were hit as such in the majority of the cases.
+
+\subsection{True Labeling Procedure}
+
+\par
+While pathologist A took part in the training generation procedure, 
+in order to maintain the unbiasedness of the study, two other pathologists, B and C, have been involved in the making of the testing process. Both of them have been instructed, 
+individually and separately, to operate this way:
+
+\begin{enumerate}
+    \item Observe the model's prediction decision boundaries of the testing data.
+    \item Leave unchanged the prediction's portions if they agreed with the model's annotations.
+    \item Edit and draw new decision boundary if they did not agree with the predicted annotations.
+\end{enumerate}
+
+The model's annotations were considered accurate when both pathologists left computer annotations unchanged. However the agreement between the two experts drops to as low as $83\%$ in non-tumor regions. To deal with this problem two consensus methods were proposed: the first one by treating pathologists edits by means of logical $\texttt{AND}$ operation (referred as C1 reading) and the second one using the logical $\texttt{OR}$ operation (referred as C2 reading).
+
+Ultimately, the true mask derived from the correct classifications, untouched by the B and C, and those which have been considered as such according to the two consensus reading C1 and C2. An average of 3909 tumor and 274 non-tumor tiles were used for testing.
+
+\subtitle{Remarks} 
+Despite the apparent simplicity of the consensus approaches adopted, still it is very uncertain how the operation are actually implemented, especially with respect to opposite edits (in which the experts edit the same portion but assign different classes).
+This issue is, in particular, significant when we consider that the article's authors stated that some pixels were discarded from the validation process, as pathologists disagreed on their classification.
+Unfortunately, no further explanation is provided.
+
+\section{Experimental Results}
+
+\begin{itemize}
+    \item \textbf{Inception v3}:
+    This model proved to be an excellent one for this segmentation problem: the accuracies are close to $99$\%, but still losing some reliability regarding non-tumor classifications. The difference of results between C1 and C2 is quite negligible, proving that the model achieved high quality predictions that left little space for errors. The advantage of this model over AlexNet is that, through transfer learning, scientists were able to rely on the model's complexity while reducing the risk of exposure to over-fitting, as this learning approach affects only how the model combines the features extracted from input images (as sort of high level reasoning), without altering the actual pattern recognition capabilities and, thus, the generalisation ability (on a lower level).
+    \item \textbf{AlexNet}
+    This model showed positive results, especially regarding tumor classification. It instead had much lower reliability on non-tumor classifications. Hence, this model's prediction capabilities are negatively biased towards non-tumor. This is most likely due to the fact that fine-tuning an entire network often leads to over-fitting, which leads to a significant degradation of the quality of the prediction results.
+\end{itemize}

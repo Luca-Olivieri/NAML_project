@@ -1,0 +1,22 @@
+\section{Scope}
+
+\par
+The purpose of the study was to replicate an article which attempts to face the problem of pancreatic tumour recognition in microscope images, through image segmentation, that is, identifying in the photo the regions of tumour nests with respect to sane ones.
+
+\par
+This problem, traditionally, has been solved in a manual way, by pathologists: experts would analyse the image and manually segment the image in the tumour and non-tumour portions. However, this approach, while being in general convenient, leads to some issues:
+
+\begin{enumerate}
+    \item \textbf{Difficulties of explainability}: 
+        experts are, usually, able to explain the reasoning behind their decision. Their operating is mostly based on their studies, 
+        the knowledge, and their expertise on the topic, but still they fail to explain some basic rule and assumptions to effectively solve the segmentation problem in an unambiguous and rational way. In short, they know how to do it, but they cannot explain why they do so.
+    \item \textbf{Variance of the results}:
+        Following directly from the last point, the experts' results are quite subjective and tend to differ from one view to another.
+        Experts of different knowledge and experience might come to different conclusion, and no absolute method other than bare consensus has been found. In such an environment, it is difficult to face the problem in a objective and rigorous way. 
+\end{enumerate}
+
+\par
+To deal with this issues as a whole, scientists have attempted to leverage imaging and AIA methods, however all these techniques did not completely succeeded to completely address this issue.
+
+\par
+Eventually, data scientists have attempted to solve the problem through supervised learning: treating it as an image segmentation problem, sophisticated specialised deep neural networks can be trained on labeled data, in order to predict the segmentation of the image, delegating to the network the burden of extracting some solid and reusable knowledge from the data.
