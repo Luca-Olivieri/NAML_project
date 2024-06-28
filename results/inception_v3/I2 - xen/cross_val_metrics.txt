@@ -5,5 +5,4 @@ precision      0.9122 +- 0.0069
 specificity    0.6590 +- 0.0106
 sensibility    0.9449 +- 0.0042
 IoU            0.8854 +- 0.0062
-dice_coeff     0.9377 +- 0.0036
-f1_score       0.7567 +- 0.0087
+f1_score       0.9377 +- 0.0036

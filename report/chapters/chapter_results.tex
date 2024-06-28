@@ -21,9 +21,7 @@ The two following tables display the averaged metrics resulted from cross-valida
 \\ \hline
 \textbf{IoU} & $0.8929 \pm 0.0063$ & \textcolor{mygreen}{$0.9019 \pm 0.0043$} & \textcolor{myred}{$0.8762 \pm 0.0075$} & $0.8854 \pm 0.0062$
 \\ \hline
-\textbf{Dice} & $0.9414 \pm 0.0037$ & \textcolor{mygreen}{$0.9471 \pm 0.0025$} & \textcolor{myred}{$0.9320 \pm 0.0044$} & $0.9377 \pm 0.0036$
-\\ \hline
-\textbf{F1} & $0.7103 \pm 0.0130$ & \textcolor{myred}{$0.6611 \pm 0.0092$} & $0.7474 \pm 0.0128$ & \textcolor{mygreen}{$0.7567 \pm 0.0087$}
+\textbf{F1} & $0.9414 \pm 0.0037$ & \textcolor{mygreen}{$0.9471 \pm 0.0025$} & \textcolor{myred}{$0.9320 \pm 0.0044$} & $0.9377 \pm 0.0036$
 \\ \hline
 \end{tabular}
 \caption{Overall validation metrics}
@@ -41,7 +39,7 @@ The two following tables display the averaged metrics resulted from cross-valida
 \\ \hline
 \textbf{IoU} & \textcolor{mygreen}{$0.9852$} & $0.9689$ & \textcolor{myred}{$0.7975$} & $0.8581$
 \\ \hline
-\textbf{Dice} & \textcolor{mygreen}{$0.9925$} & $0.9839$ & \textcolor{myred}{$0.8864$} & $0.9232$
+\textbf{F1} & \textcolor{mygreen}{$0.9925$} & $0.9839$ & \textcolor{myred}{$0.8864$} & $0.9232$
 \\ \hline
 \end{tabular}
 \caption{Full-tumor validation metrics}
@@ -55,7 +53,7 @@ From a general point of view, all models show some unbalanced results: while ove
 \par
 Despite the clear issue, it can be considered a minor problem in practice: our task is to develop techniques to highlight risks of tumor in pancreatic tissues, in order to show to experts who has authority on the subject to assess the actual health status of the patient and make informed decisions on how to operate. It is not our objective to develop a model able to pinpoint exactly, with absolute precision, the area of coverage of tumor and non-tumor cells. In other words, our models serves to ring a bell regarding the level of exposure to oncologic risk. Therefore, \textbf{it can be actually beneficial to have a system that is especially sensitive to tumors}, and is more susceptible to false positive, as it would be more prone to detect anomalies.
 
-\par Besides that, we can also notice the sensibility and the Dice coefficient are especially high, so \textbf{the models succeed in classifying positive true labels}, which is the indicator that carries more value in an a pathology detection problem such as ours.
+\par Besides that, we can also notice the sensibility and the F1 score are especially high, so \textbf{the models succeed in classifying positive true labels}, which is the indicator that carries more value in an a pathology detection problem such as ours.
 
 \subsection{Differences Between Architectures}
 
@@ -121,9 +119,7 @@ The following table collects the evaluation metrics computed on the testing imag
 \\ \hline
 \textbf{IoU} & \textcolor{myred}{$0.9170$} & \textcolor{mygreen}{$0.9194$}
 \\ \hline
-\textbf{Dice} & \textcolor{myred}{$0.9567$} & \textcolor{mygreen}{$0.9580$}
-\\ \hline
-\textbf{F1} & \textcolor{myred}{$0.7214$} & \textcolor{mygreen}{$0.8076$}
+\textbf{F1} & \textcolor{myred}{$0.9567$} & \textcolor{mygreen}{$0.9580$}
 \\ \hline
 \end{tabular}
 \caption{Selected models testing metrics}

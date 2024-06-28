@@ -144,8 +144,8 @@ were tuned by picking the best values resulting from a validation phase.
 \label{sec:validation}
 
 \par
-A \textbf{3-fold-cross-validation} was performed in order to validate models that faced different training settings and select the most performing and robust one.
-We wished to employ Leave-One-Out Cross-Validation (LOOCV). However, constrained by computational limitations, we could not rotate all 30 images. Consequently, we opted to rotate through a subset of the images to ensure computational feasibility, \uline{balancing time complexity and true loss estimation quality}.
+A \textbf{10-fold-cross-validation} was performed in order to validate models that faced different training settings and select the most performing and robust one.
+We wished to employ Leave-One-Out Cross-Validation (LOOCV). However, constrained by computational limitations, we could not rotate all 30 images. Consequently, we opted to rotate through a subset of 3 images to ensure computational feasibility, \uline{balancing time complexity and true loss estimation quality}.
 
 \par The validation, differently from the original paper, was conducted by computing \textbf{full images predictions} (\uline{through the probability map}), in order to estimate as precisely as possible the actual model's performance.
 
@@ -153,7 +153,7 @@ We wished to employ Leave-One-Out Cross-Validation (LOOCV). However, constrained
 The purpose of the validation set was for \textbf{hyper-parameters tuning, adjustments in the model and training methods}, through the evaluation of prediction computed starting from a set of input images separated from training and testing sets, hence \uline{independent} from the model itself (for an accurate and unbiased assessment of the model).
 
 \par
-All cross-validated models went through the \textbf{computation of the metrics} of the 3-fold predictions, which then got averaged by the same subset of images. These 3-averaged metrics were then recorded, averaged all together and finally recorded, along with their standard deviation, for comparison.
+All cross-validated models went through the \textbf{computation of the metrics} of the 10-fold predictions, which then got averaged by the same subset of images. These 3-averaged metrics were then recorded, averaged all together and finally recorded, along with their standard deviation, for comparison.
 
 The collected metrics are displayed in the following table.
 
@@ -163,8 +163,7 @@ The collected metrics are displayed in the following table.
     \item \textbf{Specificity}$^*$: the amount of correct negative predictions over all negative true labels.
     \item \textbf{Sensitivity} (recall): the amount of correct positive predictions over all positive true labels.
     \item \textbf{Intersection over Union} (IoU): a measure of the overlap between the positive true labels set and the positive prediction set.
-    \item \textbf{Dice coefficient}: a measure of the similarity between the positive true labels set and the positive prediction set.
-    \item \textbf{F1 score}$^*$: harmonic mean between precision and recall.
+    \item \textbf{F1 score}: harmonic mean between precision and recall.
 \end{itemize}
 
  These validated metrics, collected for each cross-validated model, have been leveraged for comparison to determine the best models.

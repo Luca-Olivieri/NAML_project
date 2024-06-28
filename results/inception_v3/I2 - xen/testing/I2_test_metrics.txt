@@ -5,5 +5,4 @@ Precision      0.941223
 Specificity    0.7072406
 Sensibility    0.975386
 IoU            0.919386
-Dice coeff.    0.958000
-F1 score       0.807626
+F1 score       0.958000

@@ -5,5 +5,4 @@ Precision           NaN
 Specificity         NaN
 Sensibility    0.797532
 IoU            0.797532
-Dice coeff.    0.886425
-F1 score            NaN
+F1 score.      0.886425
