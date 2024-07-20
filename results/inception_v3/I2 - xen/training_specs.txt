@@ -1,4 +1,4 @@
-AlexNet trained with:
+Inception v3 trained with:
 - Balanced, non-augmented, dataset;
 - Batch size 100;
 - Loss function: CrossEntropyLoss();
