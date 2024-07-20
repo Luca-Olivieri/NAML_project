@@ -1,6 +1,0 @@
-AlexNet/alexnet_params.pth filter=lfs diff=lfs merge=lfs -text
-AlexNet/AlexNet_params.pth filter=lfs diff=lfs merge=lfs -text
-inception_v3/v1/incv3_params.pth filter=lfs diff=lfs merge=lfs -text
-inception_v3/v2/incv3_params.pth filter=lfs diff=lfs merge=lfs -text
-AlexNet/v1/AlexNet_params.pth filter=lfs diff=lfs merge=lfs -text
-inception_v3/v3/incv3_params.pth filter=lfs diff=lfs merge=lfs -text
